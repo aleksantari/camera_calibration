@@ -2,17 +2,7 @@
 
 **By ALEKSANTARI**
 
-A user-friendly web tool for calibrating a camera using a chessboard pattern. Users can either **upload a set of images** of a chessboard or **use their laptop’s webcam** to capture images in real time. Once you collect enough images, the tool generates a `.yml` file containing your camera’s intrinsic parameters and distortion coefficients.
-
----
-
-## Table of Contents
-
-1. [Features](#features)  
-2. [Screenshots](#screenshots)  
-3. [Getting Started](#getting-started)  
-4. [Usage](#usage)  
-5. [License](#license)  
+A camera calibration tool with web gui. Users can either **upload a set of images** of a chessboard or **use their laptop’s webcam** to capture images in real time. Once you collect enough images, the tool generates a `.yml` file containing your camera’s intrinsic parameters and distortion coefficients.
 
 ---
 
@@ -25,39 +15,13 @@ A user-friendly web tool for calibrating a camera using a chessboard pattern. Us
 
 ---
 
-## Screenshots
-
-Here’s a quick preview of the interface and workflow:
-
-1. **Landing Page**  
-   ![Camera Calibration Title](./docs/images/screenshot-title.png)  
-   A welcoming title screen, showing the name of the tool and a short description.
-
-2. **Chessboard Configuration**  
-   ![Chessboard Configuration](./docs/images/screenshot-chessboard-config.png)  
-   Configure your chessboard’s square size and dimensions.
-
-3. **Image Source (Upload Images)**  
-   ![Upload Images](./docs/images/screenshot-upload.png)  
-   Toggle between uploading images or using your webcam.
-
-4. **Image Source (Use Webcam)**  
-   ![Use Webcam](./docs/images/screenshot-webcam.png)  
-   Set the number of images you want to capture, then click **Start Capturing** to begin.
-
-5. **Calibration Images**  
-   ![Calibration Images](./docs/images/screenshot-gallery.png)  
-   Once you have at least 10 images, click **Calibrate** to download your `.yml` file.
-
----
-
 ## Getting Started
 
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/<your-username>/<repo-name>.git
-cd <repo-name>
+git clone https://github.com/aleksantari/camera_calibration.git
+cd <camera_calibration>
 ```
 
 ### 2. Set Up the Backend
@@ -66,14 +30,9 @@ cd <repo-name>
    ```bash
    cd backend
    ```
-2. Create a new Conda environment from the `environment.yml` file or `requirements.txt`:
+2. Create a new Conda environment from the `environment.yml` and `requirements.txt`:
    ```bash
-   # If using environment.yml
    conda env create -f environment.yml
-   conda activate camera-calibration
-
-   # OR if using requirements.txt
-   conda create --name camera-calibration python=3.9
    conda activate camera-calibration
    pip install -r requirements.txt
    ```
@@ -133,9 +92,9 @@ cd <repo-name>
 
 ## License
 
-This project is licensed under the [MIT License](./LICENSE).
+This project is licensed under the [MIT License].
 
 ---
 
-> **Enjoy your newly calibrated camera!** If you have any questions or issues, please open an issue on GitHub or reach out to the project maintainer.
+> **Enjoy!** If you have any questions, suggestions or issues, please open an issue on GitHub or reach out on linkedin/aleksantari.
 
