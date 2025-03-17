@@ -1,5 +1,5 @@
 
-![Screenshot 2025-03-17 at 12 45 56 AM](https://github.com/user-attachments/assets/d342c20a-b03f-4143-b1ba-fd066113ecbd)
+![Screenshot 2025-03-17 at 12 50 28 AM](https://github.com/user-attachments/assets/2e820125-3b42-4c04-865f-11a72a5835d5)
 
 A camera calibration tool with web gui. Users can either **upload a set of images** of a chessboard or **use their laptop’s webcam** to capture images in real time. Once you collect enough images, the tool generates a `.yml` file containing your camera’s intrinsic parameters and distortion coefficients.
 
