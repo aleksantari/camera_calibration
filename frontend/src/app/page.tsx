@@ -28,33 +28,32 @@ export default function CameraCalibration() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  // effect to handle webcam initialization when useWebcam is enabled
-  useEffect(() => {
-    let stream: MediaStream | null = null
-
-    if (useWebcam) {
-      navigator.mediaDevices
-        .getUserMedia({ video: true })
-        .then((mediaStream) => {
-          stream = mediaStream
-          if (videoRef.current) {
-            videoRef.current.srcObject = mediaStream
-            videoRef.current.play()
-          }
-        })
-        .catch((error) => {
-          console.error("Error accessing webcam:", error)
-        })
-    }
-
-    return () => {
-      if (stream) {
-        stream.getTracks().forEach((track) => track.stop()) // stop webcam steam when unmounted
+    // effect to handle webcam initialization when useWebcam is enabled
+    useEffect(() => {
+      let stream: MediaStream | null = null
+  
+      if (useWebcam) {
+        navigator.mediaDevices
+          .getUserMedia({ video: true })
+          .then((mediaStream) => {
+            stream = mediaStream
+            if (videoRef.current) {
+              videoRef.current.srcObject = mediaStream
+              videoRef.current.play()
+            }
+          })
+          .catch((error) => {
+            console.error("Error accessing webcam:", error)
+          })
       }
-    }
-  }, [useWebcam])
+  
+      return () => {
+        if (stream) {
+          stream.getTracks().forEach((track) => track.stop()) // stop webcam steam when unmounted
+        }
+      }
+    }, [useWebcam])
 
-  // function to capture image from webcam
   const captureImage = () => {
     if (!videoRef.current || !canvasRef.current) return
 
@@ -64,17 +63,14 @@ export default function CameraCalibration() {
 
     if (!context) return
 
-    //set canvas dimensions to match video
     canvas.width = video.videoWidth
     canvas.height = video.videoHeight
     context.drawImage(video, 0, 0, canvas.width, canvas.height)
 
-    // convert canvas image to a data url
     const imageDataUrl = canvas.toDataURL("image/png")
     setImages((prev) => [...prev, imageDataUrl])
   }
 
-  // handle file upload for calibration images
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files
     if (!files) return
@@ -95,18 +91,15 @@ export default function CameraCalibration() {
     })
   }
 
-  // remove an image from the image list
   const removeImage = (index: number) => {
     setImages((prev) => prev.filter((_, i) => i !== index))
   }
 
-  //  start capturing images (clears previous images)
   const startCapturing = () => {
     setIsCapturing(true)
     setImages([])
   }
 
-  // function to send images to backend for calibration
   const calibrate = async () => {
     if (images.length < 10) {
       alert("Please capture or upload at least 10 images for calibration.")
@@ -133,7 +126,7 @@ export default function CameraCalibration() {
       const response = await fetch("http://127.0.0.1:5000/api/calibrate", {
         method: "POST",
         body: formData,
-      });
+      })
 
       if (!response.ok) {
         throw new Error("Calibration failed")
@@ -177,131 +170,146 @@ export default function CameraCalibration() {
 
   return (
     <div className="container mx-auto py-8 px-4">
-      <h1 className="text-5xl font-bold text-center mb-2">Camera Calibration</h1>
-      <h2 className="text-3xl text-center mb-2">by Aleksantari</h2>
-      <p className="text-center text-gray-600 mb-8">
-        Calibrate your camera by capturing images of a chessboard pattern from different angles. For best results,
-        ensure the entire chessboard is visible in each image and capture from various perspectives.
-      </p>
-
-      <div className="flex justify-center items-center gap-4 mb-8">
-        <a
-          href="https://github.com/aleksantari"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center gap-2 text-gray-700 hover:text-primary transition-colors"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="20"
-            height="20"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className="lucide lucide-github"
+      <div className="mb-12 text-center">
+        <h1 className="text-5xl font-bold mb-1 text-white">Camera Calibration!</h1>
+        <h1 className="text-xl font-bold mb-1 text-white">created by ALEKSANTARI</h1>
+        <p className="text-purple-light/80 mb-6 max-w-2xl mx-auto">
+          Calibrate your camera by capturing images of a chessboard pattern from different angles. For best results,
+          ensure the entire chessboard is visible in each image and capture from various perspectives.
+        </p>
+        <div className="flex justify-center items-center gap-6 mb-8">
+          <a href="https://github.com/aleksantari" target="_blank" rel="noopener noreferrer" className="social-button">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="lucide lucide-github"
+            >
+              <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"></path>
+              <path d="M9 18c-4.51 2-5-2-7-2"></path>
+            </svg>
+            GitHub
+          </a>
+          <a
+            href="https://www.linkedin.com/in/aleksantari/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="social-button"
           >
-            <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"></path>
-            <path d="M9 18c-4.51 2-5-2-7-2"></path>
-          </svg>
-          GitHub
-        </a>
-        <a
-          href="https://www.linkedin.com/in/aleksantari/"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center gap-2 text-gray-700 hover:text-primary transition-colors"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="20"
-            height="20"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className="lucide lucide-linkedin"
-          >
-            <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path>
-            <rect width="4" height="12" x="2" y="9"></rect>
-            <circle cx="4" cy="4" r="2"></circle>
-          </svg>
-          LinkedIn
-        </a>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="lucide lucide-linkedin"
+            >
+              <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path>
+              <rect width="4" height="12" x="2" y="9"></rect>
+              <circle cx="4" cy="4" r="2"></circle>
+            </svg>
+            LinkedIn
+          </a>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <Card>
+        <Card className="glass-card">
           <CardHeader>
-            <CardTitle>Chessboard Configuration</CardTitle>
+            <CardTitle className="text-purple-light">Chessboard Configuration</CardTitle>
             <CardDescription>Set the physical properties of your calibration chessboard</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <Label htmlFor="squareSize">Square Size (mm)</Label>
+              <Label htmlFor="squareSize" className="text-purple-light">
+                Square Size (mm)
+              </Label>
               <Input
                 id="squareSize"
                 type="number"
                 value={squareSize}
                 onChange={(e) => setSquareSize(Number(e.target.value))}
                 min={1}
+                className="bg-secondary/50 border-purple/30 focus:border-purple focus:ring-purple"
               />
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="boardWidth">Board Width (columns)</Label>
+                <Label htmlFor="boardWidth" className="text-purple-light">
+                  Board Width (columns)
+                </Label>
                 <Input
                   id="boardWidth"
                   type="number"
                   value={boardWidth}
                   onChange={(e) => setBoardWidth(Number(e.target.value))}
                   min={3}
+                  className="bg-secondary/50 border-purple/30 focus:border-purple focus:ring-purple"
                 />
               </div>
               <div>
-                <Label htmlFor="boardHeight">Board Height (rows)</Label>
+                <Label htmlFor="boardHeight" className="text-purple-light">
+                  Board Height (rows)
+                </Label>
                 <Input
                   id="boardHeight"
                   type="number"
                   value={boardHeight}
                   onChange={(e) => setBoardHeight(Number(e.target.value))}
                   min={3}
+                  className="bg-secondary/50 border-purple/30 focus:border-purple focus:ring-purple"
                 />
               </div>
             </div>
 
             <div>
-              <Label htmlFor="outputFileName">Output File Name</Label>
+              <Label htmlFor="outputFileName" className="text-purple-light">
+                Output File Name
+              </Label>
               <Input
                 id="outputFileName"
                 value={outputFileName}
                 onChange={(e) => setOutputFileName(e.target.value)}
                 placeholder="calibration info"
+                className="bg-secondary/50 border-purple/30 focus:border-purple focus:ring-purple"
               />
             </div>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="glass-card">
           <CardHeader>
-            <CardTitle>Image Source</CardTitle>
+            <CardTitle className="text-purple-light">Image Source</CardTitle>
             <CardDescription>Choose between uploading images or using your webcam</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="flex items-center space-x-2">
-              <Switch id="useWebcam" checked={useWebcam} onCheckedChange={setUseWebcam} />
-              <Label htmlFor="useWebcam">{useWebcam ? "Use Webcam" : "Upload Images"}</Label>
+            <div className="flex items-center space-x-3 p-3 rounded-lg bg-secondary/50 border border-purple/20">
+              <Switch
+                id="useWebcam"
+                checked={useWebcam}
+                onCheckedChange={setUseWebcam}
+                className="glass-switch data-[state=checked]:bg-purple"
+              />
+              <Label htmlFor="useWebcam" className="text-purple-light font-medium">
+                {useWebcam ? "Use Webcam" : "Upload Images"}
+              </Label>
             </div>
 
             {useWebcam ? (
               <div className="space-y-4">
                 <div>
-                  <Label>Number of Images to Capture: {imagesToCapture}</Label>
+                  <Label className="text-purple-light">Number of Images to Capture: {imagesToCapture}</Label>
                   <Slider
                     value={[imagesToCapture]}
                     min={10}
@@ -314,27 +322,31 @@ export default function CameraCalibration() {
 
                 {isCapturing ? (
                   <div className="space-y-4">
-                    <div className="relative aspect-video bg-black rounded-lg overflow-hidden">
+                    <div className="relative aspect-video bg-black/40 rounded-lg overflow-hidden border border-purple/20 shadow-[0_0_20px_rgba(139,92,246,0.2)]">
                       <video ref={videoRef} className="w-full h-full object-contain" autoPlay playsInline muted />
                     </div>
 
                     <div className="flex justify-between items-center">
-                      <span>
+                      <span className="text-purple-light">
                         {images.length} / {imagesToCapture} images captured
                       </span>
-                      <Button onClick={captureImage} disabled={images.length >= imagesToCapture}>
+                      <Button
+                        onClick={captureImage}
+                        disabled={images.length >= imagesToCapture}
+                        className="glass-button"
+                      >
                         <Camera className="mr-2 h-4 w-4" />
                         Capture Image
                       </Button>
                     </div>
 
                     {images.length >= imagesToCapture && (
-                      <div className="text-center text-green-600">All required images captured!</div>
+                      <div className="text-center text-purple font-medium">All required images captured!</div>
                     )}
                   </div>
                 ) : (
-                  <Button onClick={startCapturing}>
-                    <Camera className="mr-2 h-4 w-4" />
+                  <Button onClick={startCapturing} className="glass-button w-full py-6">
+                    <Camera className="mr-2 h-5 w-5" />
                     Start Capturing
                   </Button>
                 )}
@@ -345,13 +357,12 @@ export default function CameraCalibration() {
               <div className="space-y-4">
                 <Button
                   onClick={() => fileInputRef.current?.click()}
-                  variant="outline"
-                  className="w-full h-32 border-dashed"
+                  className="w-full h-32 glass-button border-dashed"
                 >
                   <div className="flex flex-col items-center">
                     <Upload className="h-8 w-8 mb-2" />
                     <span>Click to upload images</span>
-                    <span className="text-xs text-gray-500 mt-1">(Minimum 10 images required)</span>
+                    <span className="text-xs text-purple-light/80 mt-1">(Minimum 10 images required)</span>
                   </div>
                 </Button>
                 <input
@@ -369,9 +380,9 @@ export default function CameraCalibration() {
       </div>
 
       {/* Image Gallery */}
-      <Card className="mt-8">
+      <Card className="mt-8 glass-card">
         <CardHeader>
-          <CardTitle>Calibration Images</CardTitle>
+          <CardTitle className="text-purple-light">Calibration Images</CardTitle>
           <CardDescription>
             {images.length > 0
               ? `${images.length} images collected${images.length < 10 ? " (minimum 10 required)" : ""}`
@@ -386,7 +397,7 @@ export default function CameraCalibration() {
                   <img
                     src={image || "/placeholder.svg"}
                     alt={`Calibration image ${index + 1}`}
-                    className="w-full aspect-square object-cover rounded-md"
+                    className="w-full aspect-square object-cover rounded-md border border-purple/20"
                   />
                   <button
                     onClick={() => removeImage(index)}
@@ -398,7 +409,7 @@ export default function CameraCalibration() {
               ))}
             </div>
           ) : (
-            <div className="text-center py-12 text-gray-500">
+            <div className="text-center py-12 text-purple-light/60">
               No images available. Please {useWebcam ? "capture" : "upload"} some images.
             </div>
           )}
@@ -407,16 +418,16 @@ export default function CameraCalibration() {
           <Button
             onClick={calibrate}
             disabled={images.length < 10 || isCalibrating}
-            className={cn("min-w-32", isCalibrating && "opacity-80")}
+            className={cn("glass-button min-w-40 py-6 text-lg", isCalibrating ? "opacity-80" : "animate-pulse")}
           >
             {isCalibrating ? (
               <>
-                <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"></div>
+                <div className="mr-2 h-5 w-5 animate-spin rounded-full border-2 border-current border-t-transparent"></div>
                 Calibrating...
               </>
             ) : (
               <>
-                <Download className="mr-2 h-4 w-4" />
+                <Download className="mr-2 h-5 w-5" />
                 Calibrate
               </>
             )}
@@ -427,8 +438,10 @@ export default function CameraCalibration() {
       {calibrationResult && (
         <div
           className={cn(
-            "mt-4 p-4 rounded-md text-center",
-            calibrationResult.includes("successful") ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800",
+            "mt-4 p-4 rounded-md text-center backdrop-blur-md border",
+            calibrationResult.includes("successful")
+              ? "bg-green-500/20 text-green-300 border-green-500/30"
+              : "bg-red-500/20 text-red-300 border-red-500/30",
           )}
         >
           {calibrationResult}
