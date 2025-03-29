@@ -36,7 +36,7 @@ y_{\text{distorted}} = y (1 + k_1 r^2 + k_2 r^4 + k_3 r^6)
 $$
 
 Where:
-- $r^2 = x^2 + y^2%
+- $r^2 = x^2 + y^2$
 - \(k_1\), \(k_2\), and \(k_3\) are the radial distortion coefficients.
 
 #### Tangential Distortion
