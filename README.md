@@ -27,12 +27,12 @@ Real-world lenses introduce distortions, which are typically modeled as:
 #### Radial Distortion
 Radial distortion causes straight lines to appear curved. It is typically modeled as:
   
-\[
+$$
 x_{\text{distorted}} = x (1 + k_1 r^2 + k_2 r^4 + k_3 r^6)
-\]
-\[
+$$
+$$
 y_{\text{distorted}} = y (1 + k_1 r^2 + k_2 r^4 + k_3 r^6)
-\]
+$$
 
 Where:
 - \(r^2 = x^2 + y^2\)
