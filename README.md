@@ -1,3 +1,4 @@
+
 # Camera Calibration Tool with Web GUI
 
 This project is built with the OpenCV camera calibration open-source framework. It provides a web-based GUI for calibrating your camera by detecting a chessboard pattern in images. Users can either **upload a set of images** of a chessboard or **use their laptop’s webcam** to capture images in real time. Once you collect enough images, the tool generates a `.yml` file containing your camera’s intrinsic parameters and distortion coefficients.
@@ -35,7 +36,7 @@ y_{\text{distorted}} = y (1 + k_1 r^2 + k_2 r^4 + k_3 r^6)
 $$
 
 Where:
-- \(r^2 = x^2 + y^2\)
+- $r^2 = x^2 + y^2%
 - \(k_1\), \(k_2\), and \(k_3\) are the radial distortion coefficients.
 
 #### Tangential Distortion
