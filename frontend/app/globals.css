@@ -1,0 +1,108 @@
+/* @tailwind base;
+@tailwind components;
+@tailwind utilities; */
+@import "tailwindcss";
+@config "../tailwind.config.ts";
+
+@layer base {
+  :root {
+    --background: 260 25% 11%;
+    --foreground: 0 0% 98%;
+
+    --card: 260 25% 11%;
+    --card-foreground: 0 0% 98%;
+
+    --popover: 260 25% 11%;
+    --popover-foreground: 0 0% 98%;
+
+    --primary: 252 94% 67%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 260 25% 16%;
+    --secondary-foreground: 0 0% 98%;
+
+    --muted: 260 25% 16%;
+    --muted-foreground: 215 20.2% 65.1%;
+
+    --accent: 260 25% 16%;
+    --accent-foreground: 0 0% 98%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 260 25% 25%;
+    --input: 260 25% 16%;
+    --ring: 252 94% 67%;
+
+    --radius: 0.75rem;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    background-image: radial-gradient(circle at center, rgba(139, 92, 246, 0.15) 0%, rgba(0, 0, 0, 0) 70%);
+  }
+}
+
+@layer components {
+  .glass-card {
+    @apply bg-secondary/30;
+    @apply backdrop-blur-md;
+    @apply border;
+    @apply border-white/10;
+    @apply shadow-lg;
+  }
+
+  .glass-button {
+    @apply bg-purple/20;
+    @apply hover:bg-purple/30;
+    @apply backdrop-blur-md;
+    @apply border;
+    @apply border-purple/30;
+    @apply text-white;
+    box-shadow: 0 0 15px rgba(139, 92, 246, 0.5);
+    @apply transition-all;
+    @apply duration-300;
+  }
+
+  .glass-button:hover {
+    box-shadow: 0 0 20px rgba(139, 92, 246, 0.7);
+  }
+
+  .social-button {
+    @apply flex;
+    @apply items-center;
+    @apply gap-2;
+    @apply px-4;
+    @apply py-2;
+    @apply rounded-full;
+    @apply bg-purple/20;
+    @apply hover:bg-purple/30;
+    @apply backdrop-blur-md;
+    @apply border;
+    @apply border-purple/30;
+    @apply text-white;
+    box-shadow: 0 0 10px rgba(139, 92, 246, 0.3);
+    @apply transition-all;
+    @apply duration-300;
+  }
+
+  .social-button:hover {
+    box-shadow: 0 0 15px rgba(139, 92, 246, 0.6);
+  }
+
+  .glass-switch {
+    @apply bg-purple/20;
+    @apply border-purple/30;
+  }
+
+  .glass-switch[data-state="checked"] {
+    @apply bg-purple;
+    box-shadow: 0 0 10px rgba(139, 92, 246, 0.7);
+  }
+}
+
