@@ -1,9 +1,7 @@
 "use client"
 
-import React from "react"
-
+import React, { useState, useRef, useEffect } from "react"
 import type { FunctionComponent } from "react"
-import { useState, useRef, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -26,6 +24,10 @@ import {
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Progress } from "@/components/ui/progress"
+
+// Use the environment variable to set the backend URL
+const API_URL = process.env.NEXT_PUBLIC_API_URL 
+//|| "http://127.0.0.1:5000"
 
 // Define types for our application
 type ImageData = {
@@ -54,9 +56,7 @@ const CameraCalibration: FunctionComponent = () => {
   const [outputFileName, setOutputFileName] = useState("calibration info")
 
   // Workflow state
-  const [currentStep, setCurrentStep] = useState<"config" | "collection" | "verification" | "calibration" | "analysis">(
-    "config",
-  )
+  const [currentStep, setCurrentStep] = useState<"config" | "collection" | "verification" | "calibration" | "analysis">("config")
   const [isCapturing, setIsCapturing] = useState(false)
   const [isProcessing, setIsProcessing] = useState(false)
   const [isCalibrating, setIsCalibrating] = useState(false)
@@ -120,27 +120,17 @@ const CameraCalibration: FunctionComponent = () => {
     const video = videoRef.current
     const canvas = canvasRef.current
     const context = canvas.getContext("2d")
-
     if (!context) return
 
     canvas.width = video.videoWidth
     canvas.height = video.videoHeight
     context.drawImage(video, 0, 0, canvas.width, canvas.height)
-
     const imageDataUrl = canvas.toDataURL("image/png")
-
-    // Convert to blob for API calls
     canvas.toBlob((blob) => {
       if (blob) {
         setImages((prev) => [
           ...prev,
-          {
-            id: generateId(),
-            src: imageDataUrl,
-            blob: blob,
-            isValid: undefined,
-            isApproved: false,
-          },
+          { id: generateId(), src: imageDataUrl, blob, isValid: undefined, isApproved: false },
         ])
       }
     }, "image/png")
@@ -150,7 +140,6 @@ const CameraCalibration: FunctionComponent = () => {
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files
     if (!files) return
-
     Array.from(files).forEach((file) => {
       const reader = new FileReader()
       reader.onload = (event) => {
@@ -173,18 +162,11 @@ const CameraCalibration: FunctionComponent = () => {
   const handleTestImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files
     if (!files || files.length === 0) return
-
     const file = files[0]
     const reader = new FileReader()
     reader.onload = (event) => {
       if (event.target?.result) {
-        setTestImage({
-          id: generateId(),
-          src: event.target.result as string,
-          blob: file,
-        })
-
-        // If we have calibration results, automatically undistort the image
+        setTestImage({ id: generateId(), src: event.target.result as string, blob: file })
         if (calibrationResult) {
           undistortImage(file)
         }
@@ -215,42 +197,31 @@ const CameraCalibration: FunctionComponent = () => {
     setErrorMessage(null)
 
     try {
-      // Create a FormData object to send to the backend
       const formData = new FormData()
       formData.append("boardWidth", boardWidth.toString())
       formData.append("boardHeight", boardHeight.toString())
-
-      // Add all images to the form data
       images.forEach((image, index) => {
         if (image.blob) {
           formData.append("images", image.blob, `image_${index}.png`)
         }
       })
 
-      // Call the Flask backend directly for corner detection
-      console.log("Calling Flask backend directly for corner detection...")
-      const response = await fetch("http://127.0.0.1:5000/api/detect-corners", {
+      const response = await fetch(`${API_URL}/api/detect-corners`, {
         method: "POST",
         body: formData,
       })
 
       if (!response.ok) {
         const errorText = await response.text()
-        console.error(`Direct backend error (${response.status}):`, errorText)
         throw new Error(`Corner detection failed: ${response.status} - ${errorText}`)
       }
 
       const data = await response.json()
-      console.log("Received data from Flask backend:", data)
-
-      // Transform the response to match our frontend's expected format
-      // The backend returns { valid: [true, false, ...] }
       const results = data.valid.map((isValid: boolean) => ({
         isValid,
-        corners: [], // Backend doesn't return corner coordinates
+        corners: [],
       }))
 
-      // Update images with verification results
       const updatedImages = images.map((image, index) => ({
         ...image,
         isValid: index < results.length ? results[index].isValid : false,
@@ -260,13 +231,11 @@ const CameraCalibration: FunctionComponent = () => {
       setImages(updatedImages)
       setCurrentStep("verification")
 
-      // Check if we have enough valid images
       const validCount = updatedImages.filter((img) => img.isValid).length
       if (validCount < 10) {
         setErrorMessage(`Only ${validCount} valid images detected. Please capture more images (at least 10 required).`)
       }
     } catch (error) {
-      console.error("Verification error:", error)
       setErrorMessage(`Failed to verify corner detection: ${error instanceof Error ? error.message : String(error)}`)
     } finally {
       setIsProcessing(false)
@@ -286,7 +255,6 @@ const CameraCalibration: FunctionComponent = () => {
   // Calibrate camera
   const calibrate = async () => {
     const approvedImages = images.filter((img) => img.isApproved)
-
     if (approvedImages.length < 10) {
       setErrorMessage("Please approve at least 10 valid images for calibration.")
       return
@@ -296,37 +264,28 @@ const CameraCalibration: FunctionComponent = () => {
     setErrorMessage(null)
 
     try {
-      // Create a FormData object to send to the backend
       const formData = new FormData()
       formData.append("squareSize", squareSize.toString())
       formData.append("boardWidth", boardWidth.toString())
       formData.append("boardHeight", boardHeight.toString())
       formData.append("fixK3", fixK3.toString())
-
-      // Add all approved images to the form data
       approvedImages.forEach((image, index) => {
         if (image.blob) {
           formData.append("images", image.blob, `image_${index}.png`)
         }
       })
 
-      // Call the Flask backend directly for calibration
-      console.log("Calling Flask backend directly for calibration...")
-      const response = await fetch("http://127.0.0.1:5000/api/calibrate", {
+      const response = await fetch(`${API_URL}/api/calibrate`, {
         method: "POST",
         body: formData,
       })
 
       if (!response.ok) {
         const errorText = await response.text()
-        console.error(`Calibration error (${response.status}):`, errorText)
         throw new Error(`Calibration failed: ${response.status} - ${errorText}`)
       }
 
       const data = await response.json()
-      console.log("Received calibration data:", data)
-
-      // Extract calibration data from the response
       const calibrationResult = {
         intrinsicMatrix: data.calibrationData.intrinsics,
         distortionCoefficients: data.calibrationData.dist_coeffs[0],
@@ -337,7 +296,6 @@ const CameraCalibration: FunctionComponent = () => {
       setCalibrationResult(calibrationResult)
       setCurrentStep("analysis")
     } catch (error) {
-      console.error("Calibration error:", error)
       setErrorMessage(`Calibration failed: ${error instanceof Error ? error.message : String(error)}`)
     } finally {
       setIsCalibrating(false)
@@ -352,14 +310,11 @@ const CameraCalibration: FunctionComponent = () => {
     setErrorMessage(null)
 
     try {
-      // Create a FormData object to send to the backend
       const formData = new FormData()
       formData.append("squareSize", squareSize.toString())
       formData.append("boardWidth", boardWidth.toString())
       formData.append("boardHeight", boardHeight.toString())
       formData.append("fixK3", fixK3.toString())
-
-      // Add all approved images to the form data
       const approvedImages = images.filter((img) => img.isApproved)
       approvedImages.forEach((image, index) => {
         if (image.blob) {
@@ -367,24 +322,17 @@ const CameraCalibration: FunctionComponent = () => {
         }
       })
 
-      console.log("Recalibrating with fixK3:", fixK3)
-
-      // Call the Flask backend directly for recalibration
-      const response = await fetch("http://127.0.0.1:5000/api/calibrate", {
+      const response = await fetch(`${API_URL}/api/calibrate`, {
         method: "POST",
         body: formData,
       })
 
       if (!response.ok) {
         const errorText = await response.text()
-        console.error(`Recalibration error (${response.status}):`, errorText)
         throw new Error(`Recalibration failed: ${response.status} - ${errorText}`)
       }
 
       const data = await response.json()
-      console.log("Received recalibration data:", data)
-
-      // Update calibration result with new values
       setCalibrationResult({
         intrinsicMatrix: data.calibrationData.intrinsics,
         distortionCoefficients: data.calibrationData.dist_coeffs[0],
@@ -392,12 +340,10 @@ const CameraCalibration: FunctionComponent = () => {
         yml: new Blob(["Calibration data will be downloaded separately"], { type: "application/octet-stream" }),
       })
 
-      // If we have a test image, update the undistorted version
       if (testImage?.blob) {
         undistortImage(testImage.blob)
       }
     } catch (error) {
-      console.error("Recalibration error:", error)
       setErrorMessage(`Recalibration failed: ${error instanceof Error ? error.message : String(error)}`)
     } finally {
       setIsCalibrating(false)
@@ -409,36 +355,27 @@ const CameraCalibration: FunctionComponent = () => {
     if (!calibrationResult) return
 
     setIsProcessing(true)
-
     try {
-      // Create a FormData object to send to the backend
       const formData = new FormData()
       formData.append("image", imageBlob)
-
-      // Call the Flask backend directly for undistortion
-      console.log("Calling Flask backend directly for undistortion...")
-      const response = await fetch("http://127.0.0.1:5000/api/undistort", {
+      const response = await fetch(`${API_URL}/api/undistort`, {
         method: "POST",
         body: formData,
       })
 
       if (!response.ok) {
         const errorText = await response.text()
-        console.error(`Undistortion error (${response.status}):`, errorText)
         throw new Error(`Undistortion failed: ${response.status} - ${errorText}`)
       }
 
       const data = await response.json()
       const undistortedImageBase64 = data.undistortedImage
-
-      // If we have a base64 image, convert it to a data URL
       if (undistortedImageBase64) {
         setCorrectedImage(`data:image/jpeg;base64,${undistortedImageBase64}`)
       } else {
         throw new Error("No undistorted image returned from the server")
       }
     } catch (error) {
-      console.error("Undistortion error:", error)
       setErrorMessage(`Failed to undistort image: ${error instanceof Error ? error.message : String(error)}`)
       setCorrectedImage(null)
     } finally {
@@ -448,11 +385,7 @@ const CameraCalibration: FunctionComponent = () => {
 
   // Download calibration file
   const downloadCalibration = () => {
-    if (!calibrationResult) return
-
-    // Call the Flask backend directly for the calibration file
-    console.log("Downloading calibration file directly from Flask backend...")
-    fetch("http://127.0.0.1:5000/api/calibration-file")
+    fetch(`${API_URL}/api/calibration-file`)
       .then((response) => {
         if (!response.ok) {
           throw new Error(`Failed to download calibration file: ${response.status}`)
@@ -469,10 +402,7 @@ const CameraCalibration: FunctionComponent = () => {
         document.body.removeChild(a)
       })
       .catch((error) => {
-        console.error("Download error:", error)
-        setErrorMessage(
-          `Failed to download calibration file: ${error instanceof Error ? error.message : String(error)}`,
-        )
+        setErrorMessage(`Failed to download calibration file: ${error instanceof Error ? error.message : String(error)}`)
       })
   }
 
