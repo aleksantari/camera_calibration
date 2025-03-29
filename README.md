@@ -1,7 +1,7 @@
 
 # Camera Calibration Tool with Web GUI
 
-This project is built with the OpenCV camera calibration open-source framework. It provides a web-based GUI for calibrating your camera by detecting a chessboard pattern in images. Users can either **upload a set of images** of a chessboard or **use their laptop’s webcam** to capture images in real time. Once you collect enough images, the tool generates a `.yml` file containing your camera’s intrinsic parameters and distortion coefficients.
+I build this project with the OpenCV camera calibration open-source framework. It provides a web-based GUI for calibrating your camera by detecting a chessboard pattern in images. Users can either **upload a set of images** of a chessboard or **use their laptop’s webcam** to capture images in real time. Once you collect enough images, the tool generates a `.yml` file containing your camera’s intrinsic parameters and distortion coefficients.
 
 ---
 
@@ -37,20 +37,20 @@ $$
 
 Where:
 - $r^2 = x^2 + y^2$
-- \(k_1\), \(k_2\), and \(k_3\) are the radial distortion coefficients.
+- $k_1$, $k_2$, and $k_3$ are the radial distortion coefficients.
 
 #### Tangential Distortion
 Tangential distortion occurs if the lens and the image sensor are not perfectly parallel. It is modeled as:
 
-\[
+$$
 x_{\text{tangent}} = 2p_1xy + p_2(r^2 + 2x^2)
-\]
-\[
+$$
+$$
 y_{\text{tangent}} = p_1(r^2 + 2y^2) + 2p_2xy
-\]
+$$
 
 Where:
-- \(p_1\) and \(p_2\) are the tangential distortion coefficients.
+- $p_1$ and $p_2$ are the tangential distortion coefficients.
 
 ---
 
@@ -63,7 +63,7 @@ Where:
 - **Image Verification**: Users can review and approve images that have valid corner detections.
 - **Recalibration Options**:  
   - Recalibrate using updated parameters.
-  - Option to fix the \(k_3\) distortion coefficient at 0.
+  - Option to fix the $k_3$ distortion coefficient at 0.
 - **Undistortion Visualization**: Upload and visualize an undistorted version of an image while recalibrating.
 - **Calibration File Download**: Automatically generates and allows downloading a `.yml` file with calibration parameters.
 
@@ -167,7 +167,7 @@ cd camera_calibration
 
 ## License
 
-This project open-source licensed under the [MIT License].
+This project open-source licensed under the [MIT Liense].
 
 ---
 
