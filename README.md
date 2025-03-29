@@ -1,5 +1,4 @@
 ![image_alt](https://github.com/aleksantari/camera_calibration/blob/7e231ef17c1bbb6a11f1ed1b3a9d88dbce23812f/img/Screenshot%202025-03-29%20at%2012.34.15%E2%80%AFPM.png)
-# Camera Calibration Tool with Web GUI
 
 I build this project with the OpenCV camera calibration open-source framework. It provides a web-based GUI for calibrating your camera by detecting a chessboard pattern in images. Users can either **upload a set of images** of a chessboard or **use their laptop’s webcam** to capture images in real time. Once you collect enough images, the tool generates a `.yml` file containing your camera’s intrinsic parameters and distortion coefficients.
 
