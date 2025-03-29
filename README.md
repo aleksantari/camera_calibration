@@ -1,4 +1,4 @@
-https://github.com/aleksantari/camera_calibration/blob/7e231ef17c1bbb6a11f1ed1b3a9d88dbce23812f/img/Screenshot%202025-03-29%20at%2012.34.15%E2%80%AFPM.png
+![image_alt](https://github.com/aleksantari/camera_calibration/blob/7e231ef17c1bbb6a11f1ed1b3a9d88dbce23812f/img/Screenshot%202025-03-29%20at%2012.34.15%E2%80%AFPM.png)
 # Camera Calibration Tool with Web GUI
 
 I build this project with the OpenCV camera calibration open-source framework. It provides a web-based GUI for calibrating your camera by detecting a chessboard pattern in images. Users can either **upload a set of images** of a chessboard or **use their laptop’s webcam** to capture images in real time. Once you collect enough images, the tool generates a `.yml` file containing your camera’s intrinsic parameters and distortion coefficients.
@@ -55,16 +55,23 @@ Where:
 ---
 
 ## Features
+![image_alt](https://github.com/aleksantari/camera_calibration/blob/fd0c626c64555b1f03481de0310e77dd51627a40/img/Screenshot%202025-03-29%20at%2012.34.41%E2%80%AFPM.png)
 
 - **Chessboard Configuration**: Customize the chessboard size (rows/columns) and the physical square size (mm).
 - **Multiple Image Sources**: Upload images from your file system or capture them directly from your webcam.
 - **Minimum Images Requirement**: While a minimum of 10 images is required, using over 30 images is recommended for more accurate calibration.
 - **Checkerboard Corner Detection**: The tool automatically detects chessboard corners in each image.
+
+![image_alt](https://github.com/aleksantari/camera_calibration/blob/fd0c626c64555b1f03481de0310e77dd51627a40/img/Screenshot%202025-03-29%20at%2012.35.38%E2%80%AFPM.png)
+
 - **Image Verification**: Users can review and approve images that have valid corner detections.
 - **Recalibration Options**:  
   - Recalibrate using updated parameters.
   - Option to fix the $k_3$ distortion coefficient at 0.
 - **Undistortion Visualization**: Upload and visualize an undistorted version of an image while recalibrating.
+
+![image_alt](https://github.com/aleksantari/camera_calibration/blob/fd0c626c64555b1f03481de0310e77dd51627a40/img/Screenshot%202025-03-29%20at%2012.36.05%E2%80%AFPM.png)
+
 - **Calibration File Download**: Automatically generates and allows downloading a `.yml` file with calibration parameters.
 
 ---
